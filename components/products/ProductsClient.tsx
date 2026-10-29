@@ -1,10 +1,9 @@
 "use client";
 
-import { Product } from "@/data/data";
-import { Heart, Star } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import { ArrowDownUp, ChevronRight } from "lucide-react";
+import { Product } from "@/data/data";
+import ProductCard from "./ProductCard";
 
 interface Props {
   params: {
@@ -14,143 +13,133 @@ interface Props {
   newProducts: Product[];
 }
 
+// Static demo discounts until discount data is available in the database
+const demoDiscounts = [47, 31, 8, 25, 20];
+
 export default function ProductsClient({
   params: { category, sort },
   newProducts,
 }: Props) {
-  const handleWishlist = () => {
-    window.alert("Added to wishlist");
-  };
-
-  const handleAddToCart = (productName: string) => {
-    window.alert(`${productName} added to cart`);
-  };
+  const normalizedCategory = category ? decodeURIComponent(category) : "";
 
   return (
-    <section className="bg-white py-10 sm:py-14">
-      <div className="container mx-auto px-4">
-        {/* Category heading */}
-        <div className="border-b border-gray-200 pb-6">
-          <h1 className="text-2xl font-semibold capitalize text-gray-950">
-            {category}
+    <section className="bg-white py-8 sm:py-12">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Breadcrumb */}
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-6 flex flex-wrap items-center gap-1.5 text-xs text-gray-500 sm:mb-8 sm:text-sm"
+        >
+          <Link href="/" className="transition-colors hover:text-[#087f8c]">
+            Home
+          </Link>
+
+          <ChevronRight size={14} />
+
+          <Link
+            href="/products"
+            className="transition-colors hover:text-[#087f8c]"
+          >
+            Products
+          </Link>
+        </nav>
+
+        {/* Page heading */}
+        <div className="border-b border-gray-100 pb-5 sm:pb-7">
+          <h1 className="text-2xl font-semibold capitalize tracking-tight text-gray-950 sm:text-3xl">
+            {normalizedCategory || "All products"}
           </h1>
 
           <p className="mt-2 text-sm text-gray-500">
-            {newProducts.length} products
+            {newProducts.length} items
           </p>
         </div>
 
         {/* Sorting */}
-        <div className="flex justify-end py-6">
-          <form>
-            <label htmlFor="sort" className="mr-3 text-sm text-gray-600">
-              Sort
+        <div className="flex items-center justify-between gap-3 py-5 sm:py-7">
+          <p className="text-xs text-gray-500 sm:text-sm">
+            Showing {newProducts.length} items
+          </p>
+
+          <form
+            action="/products"
+            method="GET"
+            className="flex items-center gap-2"
+          >
+            {normalizedCategory && (
+              <input type="hidden" name="category" value={normalizedCategory} />
+            )}
+
+            <label
+              htmlFor="sort"
+              className="hidden items-center gap-1.5 text-sm text-gray-600 sm:flex"
+            >
+              <ArrowDownUp size={15} />
+              Sort by
             </label>
 
             <select
               id="sort"
               name="sort"
-              defaultValue={sort}
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-violet-500"
+              defaultValue={sort || "newest"}
+              className="cursor-pointer rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-xs text-gray-800 outline-none transition hover:border-gray-400 focus:border-teal-600 sm:text-sm"
             >
               <option value="newest">Newest first</option>
               <option value="price-low">Price: low to high</option>
               <option value="price-high">Price: high to low</option>
               <option value="name">Name: A to Z</option>
             </select>
+
+            <button
+              type="submit"
+              className="cursor-pointer rounded-lg bg-gray-950 px-3.5 py-2.5 text-xs font-medium text-white transition hover:bg-teal-700 sm:px-4 sm:text-sm"
+            >
+              Apply
+            </button>
           </form>
         </div>
 
         {/* Products grid */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
-          {newProducts.map((product, index) => {
-            // Static demo reviews until the database is connected
-            const rating = [5, 4, 5, 4, 5][index % 5];
-            const reviewCount = [20, 16, 24, 12, 18][index % 5];
+        {newProducts.length > 0 ? (
+          <div className="max-w-7xl mx-auto grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5">
+            {newProducts.map((product, index) => {
+              const discount = demoDiscounts[index % demoDiscounts.length];
 
-            return (
-              <article
-                key={product.id}
-                className="group min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white transition-shadow duration-300 hover:shadow-md"
-              >
-                {/* Image */}
-                <div className="relative">
-                  <Link
-                    href={`/products/${product.sku}`}
-                    className="relative block aspect-square overflow-hidden bg-white"
-                  >
-                    <Image
-                      src={product.images[0]}
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                      className="object-contain p-3 transition-transform duration-300 group-hover:scale-105 sm:p-4"
-                    />
-                  </Link>
+              // Demo original price calculated from the discount percentage
+              const originalPrice = Math.round(
+                product.price / (1 - discount / 100),
+              );
 
-                  {/* Wishlist */}
-                  <button
-                    type="button"
-                    onClick={handleWishlist}
-                    aria-label={`Add ${product.name} to wishlist`}
-                    className="absolute right-2 top-2 z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-white text-gray-600 shadow-sm transition-colors hover:text-red-500 sm:right-3 sm:top-3"
-                  >
-                    <Heart size={15} strokeWidth={1.7} />
-                  </button>
-                </div>
+              return (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  index={index}
+                  discount={discount}
+                  originalPrice={originalPrice}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          /* Empty state */
+          <div className="py-20 text-center">
+            <h2 className="text-lg font-semibold text-gray-950">
+              No products found
+            </h2>
 
-                {/* Product details */}
-                <div className="px-2.5 pb-2.5 pt-1.5 sm:px-3 sm:pb-3">
-                  <Link href={`/products/${product.sku}`}>
-                    <h2 className="line-clamp-2 min-h-8 text-[11px] font-semibold leading-4 text-gray-800 transition-colors hover:text-violet-700 sm:text-xs">
-                      {product.name}
-                    </h2>
-                  </Link>
+            <p className="mt-2 text-sm text-gray-500">
+              Explore our other collections to find your baby essentials.
+            </p>
 
-                  {/* Static star rating */}
-                  <div
-                    className="mt-1 flex items-center gap-1"
-                    aria-label={`Rated ${rating} out of 5, ${reviewCount} reviews`}
-                  >
-                    <div className="flex items-center gap-px">
-                      {Array.from({ length: 5 }).map((_, starIndex) => (
-                        <Star
-                          key={starIndex}
-                          size={11}
-                          strokeWidth={1.5}
-                          className={
-                            starIndex < rating
-                              ? "fill-red-500 text-red-500"
-                              : "fill-gray-200 text-gray-200"
-                          }
-                        />
-                      ))}
-                    </div>
-
-                    <span className="text-[9px] text-gray-500">
-                      ({reviewCount})
-                    </span>
-                  </div>
-
-                  {/* Cart and price */}
-                  <div className="mt-2.5 flex items-center justify-between gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => handleAddToCart(product.name)}
-                      className="shrink-0 cursor-pointer rounded-full border border-gray-400 px-2.5 py-1 text-[9px] font-medium text-gray-800 transition-colors hover:border-violet-600 hover:bg-violet-600 hover:text-white sm:px-3 sm:text-[10px]"
-                    >
-                      Add to Cart
-                    </button>
-
-                    <p className="whitespace-nowrap text-[10px] font-semibold text-violet-600 sm:text-[11px]">
-                      Tk{product.price}
-                    </p>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+            <Link
+              href="/products"
+              className="mt-6 inline-flex rounded-lg bg-teal-700 px-5 py-3 text-sm font-medium text-white transition hover:bg-teal-800"
+            >
+              View all products
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

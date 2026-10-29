@@ -20,7 +20,7 @@ export default function Category() {
 
   return (
     <section className="bg-white py-9 sm:py-12">
-      <div className="container mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4">
         {/* Section heading */}
         <div className="mb-6 flex items-center justify-between sm:mb-8">
           <div>
@@ -54,14 +54,14 @@ export default function Category() {
             >
               {/* Category image */}
               <div
-                className={`relative flex aspect-square w-full max-w-22 items-center justify-center overflow-hidden rounded-full ${backgrounds[index % backgrounds.length]} ring-1 ring-black/3 transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_8px_20px_rgba(40,116,208,0.12)] sm:max-w-24 lg:max-w-26`}
+                className={`relative flex w-full items-center justify-center overflow-hidden rounded-md ${backgrounds[index % backgrounds.length]} transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_8px_20px_rgba(40,116,208,0.12)] p-2`}
               >
                 <Image
                   src={category.image}
                   alt={category.name}
-                  fill
-                  sizes="(max-width: 640px) 88px, (max-width: 1024px) 96px, 104px"
-                  className="object-contain p-3 transition-transform duration-500 ease-out group-hover:scale-110 sm:p-3.5"
+                  width={104}
+                  height={104}
+                  className="size-30 rounded-lg object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                 />
               </div>
 

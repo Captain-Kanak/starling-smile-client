@@ -2,8 +2,6 @@ import React from "react";
 
 import { products } from "@/data/data";
 import ProductsClient from "@/components/products/ProductsClient";
-import ProductsClientB from "@/components/products/ProductsClientB";
-import ProductsClientC from "@/components/products/ProductsClientC";
 
 export default async function ProductPage({
   searchParams,
@@ -24,9 +22,7 @@ export default async function ProductPage({
 
   return (
     <>
-      <ProductsClientB params={{ category, sort }} newProducts={newProducts} />
-      {/* <ProductsClient params={{ category, sort }} newProducts={newProducts} />
-      <ProductsClientC params={{ category, sort }} newProducts={newProducts} /> */}
+      <ProductsClient params={{ category, sort }} newProducts={newProducts} />
     </>
   );
 }

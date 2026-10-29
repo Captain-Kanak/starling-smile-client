@@ -1,13 +1,13 @@
+import Banner from "@/components/home/Banner";
 import Category from "@/components/home/Category";
-import CategoryB from "@/components/home/CategoryB";
-import CategoryC from "@/components/home/CategoryC";
+import FeaturedProducts from "@/components/home/FeaturedProducts";
 
 export default function Home() {
   return (
     <>
+      <Banner />
       <Category />
-      <CategoryC />
-      {/* <CategoryB /> */}
+      <FeaturedProducts />
     </>
   );
 }

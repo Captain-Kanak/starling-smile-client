@@ -55,7 +55,7 @@ export default function ProductDetailsClientB({
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 sm:py-10 lg:px-10 xl:px-14">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:py-10">
         {/* Breadcrumb */}
         <nav
           aria-label="Breadcrumb"
@@ -95,7 +95,7 @@ export default function ProductDetailsClientB({
                   fill
                   priority
                   sizes="(max-width: 1023px) 100vw, 50vw"
-                  className="object-contain p-5 transition-transform duration-500 hover:scale-[1.03] sm:p-8 lg:p-10"
+                  className="object-contain p-1 transition-transform duration-500 hover:scale-[1.03] sm:p-2 lg:p-3"
                 />
 
                 {/* Product label */}

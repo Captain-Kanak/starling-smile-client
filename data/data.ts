@@ -14,14 +14,51 @@ export interface Product {
 }
 
 export const categories: Category[] = [
-  { id: 1, name: "Baby Care", image: "/images/cat.webp" },
-  { id: 2, name: "Toys", image: "/images/cat.webp" },
-  { id: 3, name: "Feeding", image: "/images/cat.webp" },
-  { id: 4, name: "Clothing", image: "/images/cat.webp" },
-  { id: 5, name: "Diapering", image: "/images/cat.webp" },
-  { id: 6, name: "Nursery", image: "/images/cat.webp" },
-  { id: 7, name: "Bath & Skin", image: "/images/cat.webp" },
-  { id: 8, name: "Health & Safety", image: "/images/cat.webp" },
+  {
+    id: 1,
+    name: "Baby Care",
+    image: "/images/products/baby_bib_dress/fx5l3w6tcsg020reyta7_4_11zon.webp",
+  },
+  {
+    id: 2,
+    name: "Toys",
+    image:
+      "/images/products/baby_carrier_bag/asysiwvfwpz8khyadx3o_2_11zon.webp",
+  },
+  {
+    id: 3,
+    name: "Feeding",
+    image: "/images/products/baby_comb/gdjwryecsyisy1nt4xvq.webp",
+  },
+  {
+    id: 4,
+    name: "Clothing",
+    image: "/images/products/baby_giraffe_teether/bnrattgujnhzewkl7yoa.webp",
+  },
+  {
+    id: 5,
+    name: "Diapering",
+    image:
+      "/images/products/baby_mosquito_net/dsw0rdhqgodx1swqpv07_11_11zon.webp",
+  },
+  {
+    id: 6,
+    name: "Nursery",
+    image:
+      "/images/products/baby_one_sided_sling_carrier_bag/blvhirtag8g5ibzgi3hq_2_11zon.webp",
+  },
+  {
+    id: 7,
+    name: "Bath & Skin",
+    image:
+      "/images/products/baby_shower_mug/aemsfy23s8jpsemonqrp_35_11zon.webp",
+  },
+  {
+    id: 8,
+    name: "Health & Safety",
+    image:
+      "/images/products/baby_silicon_feeding_set/ecanzw8yicjarbngxgpq_41_11zon.webp",
+  },
 ];
 
 export const products: Product[] = [
@@ -84,7 +121,10 @@ export const products: Product[] = [
     id: 6,
     sku: "FD-002",
     name: "Silicone Bibs Waterproof 3-Pack Set",
-    images: ["/images/products/sudocrem.webp"],
+    images: [
+      "/images/products/baby_one_sided_sling_carrier_bag/blvhirtag8g5ibzgi3hq_2_11zon.webp",
+      "/images/products/baby_one_sided_sling_carrier_bag/c4f9c8gqcpvertjlidho_3_11zon.webp",
+    ],
     price: 15.99,
     category: categories[2].name,
   },
@@ -92,7 +132,10 @@ export const products: Product[] = [
     id: 7,
     sku: "CL-001",
     name: "Organic Cotton Onesies Newborn Pack",
-    images: ["/images/products/sudocrem.webp"],
+    images: [
+      "/images/products/baby_shower_mug/aemsfy23s8jpsemonqrp_35_11zon.webp",
+      "/images/products/baby_shower_mug/qsk8tqvylqfcbikqjzui_38_11zon.webp",
+    ],
     price: 29.99,
     category: categories[3].name,
   },
@@ -100,7 +143,10 @@ export const products: Product[] = [
     id: 8,
     sku: "CL-002",
     name: "Baby Knit Hat Soft Winter Cap",
-    images: ["/images/products/sudocrem.webp"],
+    images: [
+      "/images/products/baby_silicon_feeding_set/ecanzw8yicjarbngxgpq_41_11zon.webp",
+      "/images/products/baby_silicon_feeding_set/f2ggtrgwf0tqwqrprnwm_42_11zon.webp",
+    ],
     price: 11.99,
     category: categories[3].name,
   },

@@ -43,7 +43,7 @@ export default function ProductCard({
             fill
             priority={index < 4}
             sizes="(max-width: 639px) 48vw, (max-width: 1023px) 48vw, (max-width: 1279px) 32vw, 25vw"
-            className="object-contain p-1.5 transition-transform duration-500 ease-out group-hover:scale-[1.04] sm:p-2"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           />
         </Link>
 
