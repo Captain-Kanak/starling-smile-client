@@ -1,7 +1,8 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { products } from "../../../data/data";
-import ProductDetailsClient from "@/components/ProductDetailsClient";
+import ProductDetailsClient from "@/components/products/ProductDetailsClient";
+import { products } from "@/data/data";
+import ProductDetailsClientB from "@/components/products/ProductDetailsClientB";
 
 export default async function ProductDetails({
   params,
@@ -16,5 +17,10 @@ export default async function ProductDetails({
     notFound();
   }
 
-  return <ProductDetailsClient product={product} />;
+  return (
+    <>
+      <ProductDetailsClientB product={product} />
+      {/* <ProductDetailsClient product={product} /> */}
+    </>
+  );
 }
