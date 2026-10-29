@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { Heart, ArrowDownUp, ShoppingCart, ChevronRight } from "lucide-react";
+import { ArrowDownUp, ChevronRight } from "lucide-react";
 import { Product } from "@/data/data";
+import ProductCard from "./ProductCard";
 
 interface Props {
   params: {
@@ -20,20 +20,6 @@ export default function ProductsClientB({
   params: { category, sort },
   newProducts,
 }: Props) {
-  const handleWishlist = (productName: string) => {
-    window.alert(`${productName} added to wishlist`);
-  };
-
-  const handleAddToCart = (productName: string) => {
-    window.alert(`${productName} added to cart`);
-  };
-
-  const formatPrice = (price: number) =>
-    price.toLocaleString("en-BD", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    });
-
   const normalizedCategory = category ? decodeURIComponent(category) : "";
 
   return (
@@ -115,7 +101,7 @@ export default function ProductsClientB({
 
         {/* Products grid */}
         {newProducts.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-5">
+          <div className="max-w-7xl mx-auto grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5">
             {newProducts.map((product, index) => {
               const discount = demoDiscounts[index % demoDiscounts.length];
 
@@ -125,80 +111,13 @@ export default function ProductsClientB({
               );
 
               return (
-                <article
+                <ProductCard
                   key={product.id}
-                  className="group flex min-w-0 flex-col overflow-hidden rounded-3xl border border-[#dedede] bg-white transition-colors duration-300 hover:border-gray-300 sm:rounded-4xl"
-                >
-                  {/* Product image */}
-                  <div className="relative border-b border-[#e5e5e5]">
-                    <Link
-                      href={`/products/${product.sku}`}
-                      aria-label={`View ${product.name}`}
-                      className="relative block aspect-square w-full overflow-hidden bg-white"
-                    >
-                      <Image
-                        src={product.images[0]}
-                        alt={product.name}
-                        fill
-                        priority={index < 4}
-                        sizes="(max-width: 639px) 48vw, (max-width: 1023px) 48vw, (max-width: 1279px) 32vw, 25vw"
-                        className="object-contain p-2 transition-transform duration-500 ease-out group-hover:scale-[1.04] sm:p-3"
-                      />
-                    </Link>
-
-                    {/* Discount badge: top-left corner */}
-                    <span className="absolute left-3 top-3 z-10 rounded-full bg-[#ffbd00] px-3 py-1.5 text-[11px] font-bold leading-none text-gray-950 sm:left-4 sm:top-4 sm:px-3.5 sm:py-2 sm:text-xs">
-                      -{discount}%
-                    </span>
-
-                    {/* Optional wishlist */}
-                    <button
-                      type="button"
-                      onClick={() => handleWishlist(product.name)}
-                      aria-label={`Add ${product.name} to wishlist`}
-                      className="absolute right-3 top-3 z-10 flex size-8 cursor-pointer items-center justify-center rounded-full bg-white/90 text-gray-600 shadow-sm transition-colors hover:bg-rose-50 hover:text-rose-500 sm:right-4 sm:top-4 sm:size-9"
-                    >
-                      <Heart size={17} strokeWidth={1.7} />
-                    </button>
-                  </div>
-
-                  {/* Product details */}
-                  <div className="flex flex-1 flex-col p-3.5 sm:p-5">
-                    {/* Product name */}
-                    <Link href={`/products/${product.sku}`}>
-                      <h2 className="line-clamp-2 min-h-10 text-sm font-normal leading-5 text-gray-950 transition-colors hover:text-teal-700 sm:min-h-12 sm:text-base sm:leading-6">
-                        {product.name}
-                      </h2>
-                    </Link>
-
-                    {/* Price and discount */}
-                    <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-2 sm:mt-4">
-                      <p className="text-base font-bold tracking-tight text-[#087f8c] sm:text-xl">
-                        ৳ {formatPrice(product.price)}
-                      </p>
-
-                      <p className="text-xs text-gray-500 line-through sm:text-sm">
-                        ৳ {formatPrice(originalPrice)}
-                      </p>
-                    </div>
-
-                    {/* Add to cart */}
-                    <div className="mt-auto pt-5 sm:pt-8">
-                      <button
-                        type="button"
-                        onClick={() => handleAddToCart(product.name)}
-                        className="flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-[#eaf4f5] px-3 py-3 text-xs font-medium text-gray-950 transition-colors duration-300 hover:bg-[#d7ebed] sm:min-h-15 sm:gap-3 sm:px-4 sm:text-base"
-                      >
-                        <ShoppingCart
-                          size={19}
-                          strokeWidth={2}
-                          className="shrink-0"
-                        />
-                        <span>Add to Cart</span>
-                      </button>
-                    </div>
-                  </div>
-                </article>
+                  product={product}
+                  index={index}
+                  discount={discount}
+                  originalPrice={originalPrice}
+                />
               );
             })}
           </div>
