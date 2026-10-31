@@ -59,6 +59,11 @@ export const categories: Category[] = [
     image:
       "/images/products/baby_silicon_feeding_set/ecanzw8yicjarbngxgpq_41_11zon.webp",
   },
+  {
+    id: 9,
+    name: "Cleaning",
+    image: "/images/products/cap_towel/iy5dfx6ftiqghtek2zmn_50_11zon.webp",
+  },
 ];
 
 export const products: Product[] = [
@@ -154,7 +159,10 @@ export const products: Product[] = [
     id: 9,
     sku: "DP-001",
     name: "Eco Baby Diapers Newborn Size Pack",
-    images: ["/images/products/sudocrem.webp"],
+    images: [
+      "/images/products/cap_towel/iy5dfx6ftiqghtek2zmn_50_11zon.webp",
+      "/images/products/cap_towel/xjjlyuo8znopcmr2qrb0_59_11zon.webp",
+    ],
     price: 34.99,
     category: categories[4].name,
   },
@@ -162,7 +170,10 @@ export const products: Product[] = [
     id: 10,
     sku: "DP-002",
     name: "Diaper Rash Cream Sensitive Skin",
-    images: ["/images/products/sudocrem.webp"],
+    images: [
+      "/images/products/feeder_cleaning_box/IMG_1623_11zon.webp",
+      "/images/products/feeder_cleaning_box/IMG_1625_11zon.webp",
+    ],
     price: 13.99,
     category: categories[4].name,
   },

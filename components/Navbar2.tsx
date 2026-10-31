@@ -33,7 +33,8 @@ export default function Navbar2() {
   };
 
   return (
-    <header className="relative z-50 w-full bg-white">
+    <header className="z-50 w-full bg-white">
+      <div className="hidden h-13.5 md:block" aria-hidden="true" />
       {/* Top navigation: scrolls away naturally */}
       <div className="border-b border-gray-100">
         <div className="mx-auto flex h-19 max-w-7xl items-center justify-between gap-3 px-4 sm:h-22 sm:gap-4 sm:px-6">
@@ -141,9 +142,10 @@ export default function Navbar2() {
       </div>
 
       {/* Sticky category navigation */}
+      {/* Category navigation */}
       <nav
         aria-label="Product categories"
-        className="sticky top-0 z-40 hidden bg-[#cbdfe2] md:block"
+        className="fixed left-0 right-0 top-0 z-60 hidden bg-[#cbdfe2] md:block"
       >
         <div className="mx-auto flex h-13.5 max-w-7xl items-center justify-center gap-5 overflow-x-auto px-4 lg:gap-9">
           {navLinks.map((link) => (

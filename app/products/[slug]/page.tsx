@@ -19,8 +19,8 @@ export default async function ProductDetails({
 
   return (
     <>
-      <ProductDetailsClientB product={product} />
-      {/* <ProductDetailsClient product={product} /> */}
+      <ProductDetailsClient product={product} />
+      {/* <ProductDetailsClientB product={product} /> */}
     </>
   );
 }
