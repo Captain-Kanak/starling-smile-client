@@ -23,7 +23,7 @@ import {
   TruckIcon,
   XIcon,
 } from "lucide-react"
-import { orders } from "@/data/dashboard-data"
+import { orders } from "@/data/orders"
 
 const statusConfig: Record<
   string,

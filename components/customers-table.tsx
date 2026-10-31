@@ -20,7 +20,7 @@ import {
   EditIcon,
   Trash2Icon,
 } from "lucide-react"
-import { customers } from "@/data/dashboard-data"
+import { customers } from "@/data/customers"
 
 const statusConfig: Record<
   string,

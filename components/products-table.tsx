@@ -21,7 +21,7 @@ import {
   EditIcon,
   Trash2Icon,
 } from "lucide-react"
-import { products } from "@/data/dashboard-data"
+import { products } from "@/data/products"
 
 const statusConfig: Record<
   string,
@@ -80,7 +80,7 @@ export function ProductsTable() {
               <TableRow key={product.id}>
                 <TableCell className="w-20">
                   <Image
-                    src={product.image}
+                    src={product.images[0]}
                     alt={product.name}
                     width={32}
                     height={32}
