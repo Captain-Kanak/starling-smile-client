@@ -13,6 +13,7 @@ const aboutLinks = [
   { label: "Terms & Conditions", href: "/terms" },
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Cashback Terms & Conditions", href: "/cashback" },
+  { label: "Dashboard", href: "/dashboard" },
 ];
 
 const socialLinks = [
