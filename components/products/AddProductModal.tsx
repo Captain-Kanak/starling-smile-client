@@ -1,12 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { Plus, Trash2, Save, X } from "lucide-react"
+import { Plus, Trash2, Save, Upload } from "lucide-react"
 
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
@@ -22,6 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
+import { ImageUpload } from "@/components/products/ImageUpload"
+import { ModalSection } from "@/components/products/ModalSection"
 
 import type { Product } from "@/data/products"
 import { categories } from "@/data/categories"
@@ -44,7 +45,7 @@ interface FormData {
   name: string
   categoryId: string
   description: string
-  images: string
+  images: string[]
   weight: string
   ageRange: string
   variants: VariantForm[]
@@ -71,7 +72,7 @@ export function AddProductModal({
     name: "",
     categoryId: "",
     description: "",
-    images: "",
+    images: [],
     weight: "",
     ageRange: "",
     variants: [{ size: "", color: "", sku: "", price: "", stock: "" }],
@@ -121,7 +122,7 @@ export function AddProductModal({
         .replace(/(^-|-$)/g, ""),
       description: formData.description,
       categoryId: formData.categoryId,
-      images: formData.images.split(",").map((s) => s.trim()).filter(Boolean),
+      images: formData.images,
       attributes: [
         { name: "Size", values: variantSizes },
         { name: "Color", values: variantColors },
@@ -157,7 +158,7 @@ export function AddProductModal({
       name: "",
       categoryId: "",
       description: "",
-      images: "",
+      images: [],
       weight: "",
       ageRange: "",
       variants: [{ size: "", color: "", sku: "", price: "", stock: "" }],
@@ -167,17 +168,23 @@ export function AddProductModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl sm:max-w-2xl p-6">
-        <DialogHeader>
-          <DialogTitle>Add New Product</DialogTitle>
-          <DialogDescription>
-            Fill in product details and variants below.
+      <DialogContent className="max-w-3xl p-0 w-[92vw] max-h-[95vh] flex flex-col overflow-hidden">
+        <div className="flex-shrink-0 bg-background p-6 border-b border-border/50 text-foreground">
+          <div className="flex items-center gap-2 mb-2">
+            <Upload size={20} className="text-foreground" />
+            <DialogTitle className="text-xl font-semibold tracking-tight leading-none">Add New Product</DialogTitle>
+          </div>
+          <DialogDescription className="text-muted-foreground text-sm leading-relaxed">
+            Create a new product with variants, images, and specifications.
           </DialogDescription>
-        </DialogHeader>
-        <Separator className="mt-2 mb-4" />
-        <div className="space-y-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
+        </div>
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          <form id="add-product-form" onSubmit={handleSubmit} className="space-y-6">
+            <ModalSection
+              step={1}
+              title="Product Information"
+              description="Enter the basic details about this product."
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="product-name">Product Name</Label>
@@ -194,7 +201,7 @@ export function AddProductModal({
                 <div className="space-y-2">
                   <Label htmlFor="product-category">Category</Label>
                   <Select
-                    defaultValue={formData.categoryId}
+                    value={formData.categoryId}
                     onValueChange={(value) =>
                       setFormData({ ...formData, categoryId: value ?? "" })
                     }
@@ -229,21 +236,17 @@ export function AddProductModal({
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="product-images">Image URLs</Label>
-                  <Input
-                    id="product-images"
-                    placeholder="/images/products/..., comma separated"
-                    value={formData.images}
-                    onChange={(e) =>
-                      setFormData({ ...formData, images: e.target.value })
-                    }
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Enter multiple image URLs separated by commas.
-                  </p>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="product-images">Product Images</Label>
+                <ImageUpload
+                  value={formData.images}
+                  onChange={(imgs) =>
+                    setFormData({ ...formData, images: imgs })
+                  }
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="product-weight">Weight</Label>
                   <Input
@@ -267,178 +270,153 @@ export function AddProductModal({
                   />
                 </div>
               </div>
+            </ModalSection>
 
-              <Separator />
+            <Separator className="border-border/50" />
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="product-variants">Product Variants</Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addVariant}
+            <ModalSection
+              step={2}
+              title="Product Variants"
+              description="Define size, color, SKU, price & stock per variant."
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Manage variant options
+                </span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addVariant}
+                >
+                  <Plus size={14} /> Add Variant
+                </Button>
+              </div>
+
+              <div className="space-y-3">
+                {formData.variants.map((variant, index) => (
+                  <div
+                    key={index}
+                    className="border rounded-lg p-4 bg-muted/40 hover:bg-muted/60 transition-colors"
                   >
-                    <Plus size={14} /> Add Variant
-                  </Button>
-                </div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
+                        Variant {index + 1}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon-xs"
+                        onClick={() => removeVariant(index)}
+                        disabled={formData.variants.length === 1}
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    </div>
 
-                <div className="space-y-3">
-                  {formData.variants.map((variant, index) => (
-                    <div
-                      key={index}
-                      className="border rounded-lg p-4 space-y-4"
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                          Variant {index + 1}
-                        </span>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon-xs"
-                          onClick={() => removeVariant(index)}
-                          disabled={formData.variants.length === 1}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      <div className="space-y-2">
+                        <Label htmlFor={`variant-size-${index}`}>Size</Label>
+                        <Select
+                          value={variant.size}
+                          onValueChange={(value) =>
+                            updateVariantField(index, "size", value ?? "")
+                          }
                         >
-                          <Trash2 size={14} />
-                        </Button>
+                          <SelectTrigger
+                            className="w-full h-9 text-sm"
+                            id={`variant-size-${index}`}
+                          >
+                            <SelectValue placeholder="Size" />
+                          </SelectTrigger>
+                          <SelectContent className="text-sm">
+                            <SelectGroup>
+                              {variantSizes.map((s) => (
+                                <SelectItem key={s} value={s}>
+                                  {s}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
                       </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        <div className="space-y-2">
-                          <Label htmlFor={`variant-size-${index}`}>Size</Label>
-                          <Select
-                            defaultValue={variant.size}
-                            onValueChange={(value) =>
-                              updateVariantField(
-                                index,
-                                "size",
-                                value ?? ""
-                              )
-                            }
+                      <div className="space-y-2">
+                        <Label htmlFor={`variant-color-${index}`}>Color</Label>
+                        <Select
+                          value={variant.color}
+                          onValueChange={(value) =>
+                            updateVariantField(index, "color", value ?? "")
+                          }
+                        >
+                          <SelectTrigger
+                            className="w-full h-9 text-sm"
+                            id={`variant-color-${index}`}
                           >
-                            <SelectTrigger
-                              className="w-full h-8 text-xs"
-                              id={`variant-size-${index}`}
-                            >
-                              <SelectValue placeholder="Size" />
-                            </SelectTrigger>
-                            <SelectContent className="text-xs">
-                              <SelectGroup>
-                                {variantSizes.map((s) => (
-                                  <SelectItem key={s} value={s}>
-                                    {s}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor={`variant-color-${index}`}>Color</Label>
-                          <Select
-                            defaultValue={variant.color}
-                            onValueChange={(value) =>
-                              updateVariantField(
-                                index,
-                                "color",
-                                value ?? ""
-                              )
-                            }
-                          >
-                            <SelectTrigger
-                              className="w-full h-8 text-xs"
-                              id={`variant-color-${index}`}
-                            >
-                              <SelectValue placeholder="Color" />
-                            </SelectTrigger>
-                            <SelectContent className="text-xs">
-                              <SelectGroup>
-                                {variantColors.map((c) => (
-                                  <SelectItem key={c} value={c}>
-                                    {c}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor={`variant-sku-${index}`}>SKU</Label>
-                          <Input
-                            id={`variant-sku-${index}`}
-                            placeholder="e.g. BC-001-200"
-                            value={variant.sku}
-                            onChange={(e) =>
-                              updateVariantField(index, "sku", e.target.value)
-                            }
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor={`variant-price-${index}`}>
-                            Price (৳)
-                          </Label>
-                          <Input
-                            id={`variant-price-${index}`}
-                            type="number"
-                            value={variant.price}
-                            onChange={(e) =>
-                              updateVariantField(
-                                index,
-                                "price",
-                                e.target.value
-                              )
-                            }
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor={`variant-stock-${index}`}>Stock</Label>
-                          <Input
-                            id={`variant-stock-${index}`}
-                            type="number"
-                            value={variant.stock}
-                            onChange={(e) =>
-                              updateVariantField(
-                                index,
-                                "stock",
-                                e.target.value
-                              )
-                            }
-                          />
-                        </div>
+                            <SelectValue placeholder="Color" />
+                          </SelectTrigger>
+                          <SelectContent className="text-sm">
+                            <SelectGroup>
+                              {variantColors.map((c) => (
+                                <SelectItem key={c} value={c}>
+                                  {c}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`variant-sku-${index}`}>SKU</Label>
+                        <Input
+                          id={`variant-sku-${index}`}
+                          placeholder="e.g. BC-001-200"
+                          value={variant.sku}
+                          onChange={(e) =>
+                            updateVariantField(index, "sku", e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`variant-price-${index}`}>
+                          Price (৳)
+                        </Label>
+                        <Input
+                          id={`variant-price-${index}`}
+                          type="number"
+                          value={variant.price}
+                          onChange={(e) =>
+                            updateVariantField(index, "price", e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`variant-stock-${index}`}>Stock</Label>
+                        <Input
+                          id={`variant-stock-${index}`}
+                          type="number"
+                          value={variant.stock}
+                          onChange={(e) =>
+                            updateVariantField(index, "stock", e.target.value)
+                          }
+                        />
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-            </div>
-
-            <Separator className="mt-4" />
-
-            <div className="flex items-center justify-end gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={!formData.name || !formData.categoryId}
-              >
-                <Save size={16} /> Add Product
-              </Button>
-            </div>
+            </ModalSection>
           </form>
         </div>
-        <button
-          onClick={() => onOpenChange(false)}
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
-        >
-          <span className="sr-only">Close</span>
-          <X size={20} strokeWidth={2} />
-        </button>
+        <div className="flex-shrink-0 border-t border-border/50 bg-background/50 backdrop-blur p-4 flex items-center justify-between gap-3">
+          <Button
+            type="submit"
+            form="add-product-form"
+            disabled={!formData.name || !formData.categoryId}
+          >
+            <Save size={16} /> Add Product
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   )

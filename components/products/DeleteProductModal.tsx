@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Trash2, X } from "lucide-react"
+import { Trash2 } from "lucide-react"
 
 import {
   Dialog,
@@ -47,13 +47,6 @@ export function DeleteProductModal({
             <Trash2 size={16} /> Delete Product
           </Button>
         </DialogFooter>
-        <button
-          onClick={() => onOpenChange(false)}
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
-        >
-          <span className="sr-only">Close</span>
-          <X size={20} strokeWidth={2} />
-        </button>
       </DialogContent>
     </Dialog>
   )

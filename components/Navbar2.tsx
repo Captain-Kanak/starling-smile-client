@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ShoppingCart, Menu, X, Search, Gift, ChevronDown } from "lucide-react";
+import { redirect } from "next/navigation";
 
 const navLinks = [
   { label: "Diapering", href: "/products?category=Diapering" },
@@ -26,7 +27,7 @@ export default function Navbar2() {
     const query = searchQuery.trim();
     if (!query) return;
 
-    window.location.href = `/products?search=${encodeURIComponent(query)}`;
+    redirect(`/products?search=${encodeURIComponent(query)}`);
   };
 
   return (
