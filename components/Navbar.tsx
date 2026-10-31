@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ShoppingCart, Menu, X, Search, Gift, ChevronDown } from "lucide-react";
-import { useCart } from "@/context/CartContext";
 
 const navLinks = [
   { label: "Diapering", href: "/products?category=Diapering" },
@@ -18,8 +17,6 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const { itemCount, setIsOpen } = useCart();
-
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
@@ -106,13 +103,11 @@ export default function Navbar() {
 
               <button
                 type="button"
-                onClick={() => setIsOpen(true)}
-                aria-label={`Open cart, ${itemCount} items`}
                 className="relative flex size-13 cursor-pointer items-center justify-center rounded-full bg-[#edf5f6] text-gray-950 transition-colors hover:bg-[#dcebed]"
               >
                 <ShoppingCart size={25} strokeWidth={2} />
                 <span className="absolute -right-0.5 -top-1 flex min-w-5 items-center justify-center rounded-full bg-[#00616b] px-1 py-0.5 text-xs font-bold text-white">
-                  {itemCount}
+                  5
                 </span>
               </button>
             </div>
@@ -121,16 +116,12 @@ export default function Navbar() {
             <div className="flex shrink-0 items-center gap-1.5 md:hidden">
               <button
                 type="button"
-                onClick={() => setIsOpen(true)}
-                aria-label={`Open cart, ${itemCount} items`}
                 className="relative flex size-10 cursor-pointer items-center justify-center rounded-full bg-[#edf5f6] text-gray-900"
               >
                 <ShoppingCart size={20} />
-                {itemCount > 0 && (
-                  <span className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full bg-[#00616b] text-[10px] font-bold text-white">
-                    {itemCount}
-                  </span>
-                )}
+                <span className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full bg-[#00616b] text-[10px] font-bold text-white">
+                  5
+                </span>
               </button>
 
               <button
