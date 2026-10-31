@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
@@ -72,25 +73,33 @@ export function ProductsTable() {
   return (
     <div className="flex flex-col gap-4">
       <Toaster />
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative w-full max-w-md">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <Input
-            placeholder="Search products..."
-            className="pl-10"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <div className="flex items-center justify-between gap-4">
+          <div className="relative w-full max-w-md">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Input
+              placeholder="Search products..."
+              className="pl-10"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <Link href="/dashboard/products/add">
+              <Button variant="outline" size="sm">
+                <PlusIcon className="mr-2 size-4" />
+                Add New Page
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setAddProductOpen(true)}
+            >
+              <PlusIcon className="mr-2 size-4" />
+              Add Product
+            </Button>
+          </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setAddProductOpen(true)}
-        >
-          <PlusIcon className="mr-2 size-4" />
-          Add Product
-        </Button>
-      </div>
 
       <AddProductModal
         open={addProductOpen}
