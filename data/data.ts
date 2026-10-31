@@ -1,6 +1,7 @@
 export {
   categories,
   categoryMap,
+  categoryMapBySlug,
   categoryNames,
   type Category,
 } from "./categories";

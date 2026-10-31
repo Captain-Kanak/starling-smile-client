@@ -1,7 +1,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import ProductDetailsClient from "@/components/products/ProductDetailsClient";
-import { products } from "@/data/data";
+import { products } from "@/data/products";
 import ProductDetailsClientB from "@/components/products/ProductDetailsClientB";
 
 export default async function ProductDetails({
@@ -11,7 +11,9 @@ export default async function ProductDetails({
 }) {
   const { slug } = await params;
 
-  const product = products.find((product) => product.sku === slug);
+  const product = products.find((product) =>
+    product.variants.some((variant) => variant.sku === slug)
+  );
 
   if (!product) {
     notFound();

@@ -15,7 +15,8 @@ import {
   Heart,
   ChevronRight,
 } from "lucide-react";
-import type { Product } from "@/data/data";
+import type { Product } from "@/data/products";
+import { categories } from "@/data/categories";
 
 export default function ProductDetailsClientB({
   product,
@@ -36,7 +37,7 @@ export default function ProductDetailsClientB({
     images.length > 0 ? images : ["/images/pro-placeholder.png"];
 
   const productName = product.name || "Baby product";
-  const price = Number(product.price) || 0;
+  const price = Number(product.variants[0]?.price) || 0;
   const image = galleryImages[selectedImage] ?? galleryImages[0];
 
   const formatPrice = (value: number) =>
@@ -165,10 +166,14 @@ export default function ProductDetailsClientB({
           <section className="flex min-w-0 flex-col lg:sticky lg:top-8">
             {/* Category */}
             <Link
-              href={`/products?category=${encodeURIComponent(product.category)}`}
+              href={`/products?category=${encodeURIComponent(
+                categories.find((c) => c.id === product.categoryId)?.name ||
+                  product.categoryId
+              )}`}
               className="w-fit rounded-full bg-[#eaf4f5] px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#087f8c] transition-colors hover:bg-[#d9edef]"
             >
-              {product.category}
+              {categories.find((c) => c.id === product.categoryId)?.name ||
+                product.categoryId}
             </Link>
 
             {/* Product name */}
@@ -179,7 +184,7 @@ export default function ProductDetailsClientB({
             {/* SKU */}
             <p className="mt-3 text-xs text-gray-500 sm:text-sm">
               Product code:{" "}
-              <span className="font-medium text-gray-800">{product.sku}</span>
+              <span className="font-medium text-gray-800">{product.variants[0]?.sku}</span>
             </p>
 
             {/* Price */}

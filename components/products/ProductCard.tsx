@@ -1,6 +1,6 @@
 "use client";
 
-import { Product } from "@/data/data";
+import { Product } from "@/data/products";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,6 +18,8 @@ export default function ProductCard({
   discount,
   originalPrice,
 }: Props) {
+  const firstVariant = product.variants[0];
+
   const handleAddToCart = (productName: string) => {
     window.alert(`${productName} added to cart`);
   };
@@ -28,12 +30,15 @@ export default function ProductCard({
       maximumFractionDigits: 2,
     });
 
+  const variantPrice = firstVariant?.price || 0;
+  const variantCompareAt = firstVariant?.compareAtPrice;
+
   return (
     <article className="group flex min-w-0 flex-col overflow-hidden rounded-lg border border-[#dedede] bg-white transition-all duration-300 hover:border-gray-300 hover:shadow-md">
       {/* Product image */}
       <div className="relative">
         <Link
-          href={`/products/${product.sku}`}
+          href={`/products/${firstVariant?.sku}`}
           aria-label={`View ${product.name}`}
           className="relative block aspect-square w-full overflow-hidden bg-white"
         >
@@ -58,7 +63,7 @@ export default function ProductCard({
       {/* Product details */}
       <div className="flex flex-1 flex-col border-t border-[#e5e5e5] p-3 sm:p-4">
         {/* Product name */}
-        <Link href={`/products/${product.sku}`}>
+        <Link href={`/products/${firstVariant?.sku}`}>
           <h2 className="line-clamp-2 text-base leading-5.5 font-medium text-gray-950 transition-colors hover:text-[#087f8c]">
             {product.name}
           </h2>
@@ -67,10 +72,16 @@ export default function ProductCard({
         {/* Price */}
         <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 sm:mt-1.5">
           <p className="text-lg font-bold tracking-tight text-[#087f8c] sm:text-xl">
-            ৳ {formatPrice(product.price)}
+            ৳ {formatPrice(variantPrice)}
           </p>
 
-          {originalPrice > product.price && (
+          {variantCompareAt && variantCompareAt > variantPrice && (
+            <p className="text-xs text-gray-500 line-through sm:text-sm">
+              ৳ {formatPrice(variantCompareAt)}
+            </p>
+          )}
+
+          {originalPrice > variantPrice && (
             <p className="text-xs text-gray-500 line-through sm:text-sm">
               ৳ {formatPrice(originalPrice)}
             </p>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowDownUp, ChevronRight } from "lucide-react";
-import { Product } from "@/data/data";
+import { Product } from "@/data/products";
 import ProductCard from "./ProductCard";
 
 interface Props {
@@ -107,7 +107,7 @@ export default function ProductsClient({
 
               // Demo original price calculated from the discount percentage
               const originalPrice = Math.round(
-                product.price / (1 - discount / 100),
+                product.variants[0]?.price / (1 - discount / 100),
               );
 
               return (

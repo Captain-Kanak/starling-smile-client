@@ -1,6 +1,6 @@
 import React from "react";
 
-import { products } from "@/data/data";
+import { products, categories } from "@/data/data";
 import ProductsClient from "@/components/products/ProductsClient";
 
 export default async function ProductPage({
@@ -13,9 +13,14 @@ export default async function ProductPage({
   const category = params.category;
   const sort = params.sort;
 
-  const categoryProducts = products.filter(
-    (product) => product.category.toLowerCase() === category,
+  const categoryItem = categories.find(
+    (c) => c.name.toLowerCase() === category.toLowerCase()
   );
+  const categoryId = categoryItem?.id;
+
+  const categoryProducts = categoryId
+    ? products.filter((product) => product.categoryId === categoryId)
+    : [];
 
   const newProducts =
     categoryProducts.length > 0 ? [...categoryProducts] : products;

@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { products } from "@/data/data";
+import { products } from "@/data/products";
 import ProductCard from "../products/ProductCard";
 
 // Static demo discounts until discount data is available in the database
@@ -45,11 +45,12 @@ export default function FeaturedProducts() {
         {/* Featured product grid */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5 lg:gap-5">
           {featuredProducts.map((product, index) => {
+            const firstVariant = product.variants[0];
             const discount = demoDiscounts[index % demoDiscounts.length];
 
             // Demo original price calculated from the discount percentage
             const originalPrice = Math.round(
-              product.price / (1 - discount / 100),
+              firstVariant.price / (1 - discount / 100),
             );
 
             return (

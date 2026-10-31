@@ -21,26 +21,53 @@ import {
   EditIcon,
   Trash2Icon,
 } from "lucide-react"
-import { products } from "@/data/products"
+import { products, type Product } from "@/data/products"
+import { AddProductModal } from "@/components/products/AddProductModal"
+import { EditProductModal } from "@/components/products/EditProductModal"
+import { DeleteProductModal } from "@/components/products/DeleteProductModal"
 
 const statusConfig: Record<
-  string,
+  Product["status"],
   { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
 > = {
-  active: { label: "Active", variant: "default" },
-  "low-stock": { label: "Low Stock", variant: "secondary" },
-  "out-of-stock": { label: "Out of Stock", variant: "destructive" },
+  DRAFT: { label: "Draft", variant: "outline" },
+  ACTIVE: { label: "Active", variant: "default" },
+  ARCHIVED: { label: "Archived", variant: "destructive" },
 }
 
 export function ProductsTable() {
   const [search, setSearch] = useState("")
+  const [addProductOpen, setAddProductOpen] = useState(false)
+  const [editProductOpen, setEditProductOpen] = useState(false)
+  const [deleteProductOpen, setDeleteProductOpen] = useState(false)
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+  const [deletingProduct, setDeletingProduct] = useState<Product | null>(null)
 
   const filteredProducts = products.filter(
     (product) =>
       product.name.toLowerCase().includes(search.toLowerCase()) ||
-      product.sku.toLowerCase().includes(search.toLowerCase()) ||
-      product.category.toLowerCase().includes(search.toLowerCase())
+      product.slug.toLowerCase().includes(search.toLowerCase()) ||
+      product.variants.some((v) =>
+        v.sku.toLowerCase().includes(search.toLowerCase())
+      )
   )
+
+  const handleAddProduct = (product: Omit<Product, "id">) => {
+    console.log("New product added:", product)
+    setAddProductOpen(false)
+  }
+
+  const handleSaveProduct = (product: Omit<Product, "id">) => {
+    console.log("Product saved:", product)
+    setEditProductOpen(false)
+    setEditingProduct(null)
+  }
+
+  const handleDeleteProduct = () => {
+    console.log("Product deleted:", deletingProduct?.name)
+    setDeleteProductOpen(false)
+    setDeletingProduct(null)
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -55,11 +82,35 @@ export function ProductsTable() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Button variant="outline" size="sm">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setAddProductOpen(true)}
+        >
           <PlusIcon className="mr-2 size-4" />
           Add Product
         </Button>
       </div>
+
+      <AddProductModal
+        open={addProductOpen}
+        onOpenChange={setAddProductOpen}
+        onAdd={handleAddProduct}
+      />
+
+      <EditProductModal
+        open={editProductOpen}
+        onOpenChange={setEditProductOpen}
+        product={editingProduct}
+        onSave={handleSaveProduct}
+      />
+
+      <DeleteProductModal
+        open={deleteProductOpen}
+        onOpenChange={setDeleteProductOpen}
+        productName={deletingProduct?.name ?? null}
+        onDelete={handleDeleteProduct}
+      />
 
       <div className="overflow-hidden rounded-lg border">
         <Table>
@@ -76,46 +127,72 @@ export function ProductsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredProducts.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell className="w-20">
-                  <Image
-                    src={product.images[0]}
-                    alt={product.name}
-                    width={32}
-                    height={32}
-                    className="size-8 rounded-md object-cover"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell className="font-mono text-xs">{product.sku}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell className="font-medium">
-                  ${product.price.toFixed(2)}
-                </TableCell>
-                <TableCell className="font-medium">
-                  {product.stock}
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={statusConfig[product.status].variant}
-                    className="border capitalize"
-                  >
-                    {statusConfig[product.status].label}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon">
-                      <EditIcon />
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <Trash2Icon />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+            {filteredProducts.map((product) => {
+              const firstVariant = product.variants[0]
+              const prices = product.variants.map((v) => v.price)
+              const totalStock = product.variants.reduce(
+                (sum, v) => sum + v.inventory.available,
+                0
+              )
+
+              const priceRange =
+                prices.length > 1
+                  ? `৳${Math.min(...prices)} – ৳${Math.max(...prices)}`
+                  : `৳${prices[0] || 0}`
+
+              return (
+                <TableRow key={product.id}>
+                  <TableCell className="w-20">
+                    <Image
+                      src={product.images[0]}
+                      alt={product.name}
+                      width={32}
+                      height={32}
+                      className="size-8 rounded-md object-cover"
+                    />
+                  </TableCell>
+                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell className="font-mono text-xs">
+                    {firstVariant?.sku || "—"}
+                  </TableCell>
+                  <TableCell>{product.categoryId}</TableCell>
+                  <TableCell className="font-medium">{priceRange}</TableCell>
+                  <TableCell className="font-medium">{totalStock}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={statusConfig[product.status].variant}
+                      className="border capitalize"
+                    >
+                      {statusConfig[product.status].label}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setEditingProduct(product)
+                          setEditProductOpen(true)
+                        }}
+                      >
+                        <EditIcon />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setDeletingProduct(product)
+                          setDeleteProductOpen(true)
+                        }}
+                      >
+                        <Trash2Icon />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </div>
