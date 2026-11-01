@@ -256,7 +256,7 @@ export default function ProductDetailsClient({
             {/* Essential product info */}
             <div className="flex-1 space-y-3">
               {/* Product title */}
-              <h1 className="mt-1 text-xl font-bold leading-none tracking-tight text-[#252c29] sm:text-2xl">
+              <h1 className="text-xl font-bold leading-none tracking-tight text-[#252c29] sm:text-2xl">
                 {product.name}
               </h1>
 
