@@ -12,6 +12,7 @@ import {
   Truck,
   ShieldCheck,
   RotateCcw,
+  X,
 } from "lucide-react";
 
 import type { Product } from "@/data/products";
@@ -37,6 +38,8 @@ export default function ProductDetailsClient({
     w: number;
     h: number;
   } | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [reviewImagesVisible, setReviewImagesVisible] = useState(4);
   const imageRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
@@ -594,7 +597,7 @@ export default function ProductDetailsClient({
           </section>
         </div>
 
-        {/* PRODUCT DESCRIPTION & SPECIFICATIONS */}
+        {/* PRODUCT DESCRIPTION */}
         <section className="mt-10 border-t border-gray-200 pt-6 sm:mt-12 sm:pt-8">
           <div className="flex flex-wrap gap-5 border-b border-gray-200 mb-5 sm:mb-6">
             <div className="relative pb-2 text-[10px] font-bold text-[#087f8c] uppercase tracking-wider">
@@ -603,45 +606,96 @@ export default function ProductDetailsClient({
             </div>
           </div>
 
-          <div className="grid gap-6 py-6 lg:grid-cols-2 sm:py-7">
-            {/* Description */}
-            <div>
-              <h2 className="text-sm font-bold text-gray-800">Description</h2>
+          <div className="px-6 sm:px-8 py-6 sm:py-7">
+            <h2 className="text-sm font-bold text-gray-800 mb-3">
+              Description
+            </h2>
+            <p className="whitespace-pre-line text-xs leading-7 text-gray-500 sm:text-[13px]">
+              {product.description || "No description available."}
+            </p>
+          </div>
+        </section>
 
-              <p className="mt-3 whitespace-pre-line text-xs leading-7 text-gray-500 sm:text-[13px]">
-                {product.description || "No description available."}
-              </p>
+        {/* CUSTOMER REVIEW IMAGES */}
+        <section className="mt-10 border-t border-gray-200 pt-6 sm:mt-12 sm:pt-8">
+          <div className="flex flex-wrap gap-5 border-b border-gray-200 mb-5 sm:mb-6">
+            <div className="relative pb-2 text-[10px] font-bold text-[#087f8c] uppercase tracking-wider">
+              Customer Reviews
+              <span className="absolute bottom-0 left-0 h-px w-full bg-[#087f8c]" />
+            </div>
+          </div>
+
+          <div className="px-6 sm:px-8 py-6 sm:py-7">
+            <div className="flex flex-wrap gap-4 sm:gap-6">
+              {["care", "cleaning", "clothing", "diapering", "feeding", "foods", "nursery", "toys"]
+                .slice(0, reviewImagesVisible)
+                .map((cat, index) => (
+                  <div key={cat} className="relative group">
+                    <button
+                      type="button"
+                      onClick={() => setPreviewImage(`/images/categories/${cat}.webp`)}
+                      className="block overflow-hidden rounded-xl border border-gray-200 bg-white aspect-square w-20 sm:w-24 sm:h-24 flex items-center justify-center cursor-pointer transition hover:border-[#087f8c]"
+                    >
+                      <Image
+                        src={`/images/categories/${cat}.webp`}
+                        alt={`Customer review ${cat}`}
+                        fill
+                        sizes="(max-width: 1023px) 100vw, 96px"
+                        className="object-cover w-full h-full"
+                      />
+                    </button>
+                    <span className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 bg-[#f8f9f6] px-2 py-0.5 rounded-full border border-gray-200 text-[10px] font-medium text-gray-500 opacity-0 group-hover:opacity-100 transition">
+                      {cat}
+                    </span>
+                  </div>
+                ))}
             </div>
 
-            {/* Specifications */}
-            <div>
-              <h2 className="text-sm font-bold text-gray-800">
-                Specifications
-              </h2>
+            {reviewImagesVisible < 8 && (
+              <button
+                type="button"
+                onClick={() => setReviewImagesVisible((current) => Math.min(current + 4, 8))}
+                className="mt-6 inline-flex items-center gap-1.5 cursor-pointer text-[11px] font-semibold text-[#087f8c] hover:text-[#066b8c] transition"
+              >
+                Load More <span className="text-xs">+</span>
+              </button>
+            )}
 
-              {product.specifications &&
-              Object.keys(product.specifications).length > 0 ? (
-                <div className="mt-3 divide-y divide-gray-100">
-                  {Object.entries(product.specifications).map(
-                    ([key, value]) => (
-                      <div
-                        key={key}
-                        className="flex justify-between gap-5 py-3 text-xs sm:text-sm"
-                      >
-                        <span className="text-gray-400">{key}</span>
-                        <span className="text-right font-medium text-gray-700">
-                          {value}
-                        </span>
-                      </div>
-                    ),
-                  )}
+            {/* Preview Modal */}
+            {previewImage && (
+              <div
+                className="fixed inset-0 z-[60] flex items-center justify-center"
+                role="dialog"
+                aria-modal="true"
+                onClick={() => setPreviewImage(null)}
+              >
+                <div
+                  className="fixed inset-0 bg-black/75 backdrop-blur-md"
+                  onClick={() => setPreviewImage(null)}
+                />
+                <div
+                  className="relative bg-white rounded-3xl shadow-2xl max-w-[720px] max-h-[82vh] flex flex-col items-center justify-center p-2 overflow-hidden"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setPreviewImage(null)}
+                    className="absolute top-6 right-6 z-10 cursor-pointer text-gray-400 hover:text-black bg-white rounded-full p-2 shadow-lg transition"
+                    aria-label="Close preview"
+                  >
+                    <X size={22} strokeWidth={2.5} className="text-black" />
+                  </button>
+
+                  <div className="relative w-full max-w-[640px] max-h-[70vh] flex items-center justify-center overflow-hidden bg-transparent p-0">
+                    <img
+                      src={previewImage}
+                      alt="Preview"
+                      className="object-contain w-auto h-auto max-w-full max-h-[64vh] rounded-xl"
+                    />
+                  </div>
                 </div>
-              ) : (
-                <p className="mt-3 text-xs text-gray-400">
-                  No specifications available.
-                </p>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </section>
       </div>
