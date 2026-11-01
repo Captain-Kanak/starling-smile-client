@@ -27,16 +27,16 @@ export default function ProductDetailsClient({
   const [selectedVariant, setSelectedVariant] = useState<
     Product["variants"][number] | null
   >(null);
-  const [lensPos, setLensPos] = useState<{ x: number; y: number } | null>(
-    null,
-  );
+  const [lensPos, setLensPos] = useState<{ x: number; y: number } | null>(null);
   const [isLensVisible, setIsLensVisible] = useState(false);
-  const [containerSize, setContainerSize] = useState<{ w: number; h: number } | null>(
-    null,
-  );
-  const [imgNaturalSize, setImgNaturalSize] = useState<{ w: number; h: number } | null>(
-    null,
-  );
+  const [containerSize, setContainerSize] = useState<{
+    w: number;
+    h: number;
+  } | null>(null);
+  const [imgNaturalSize, setImgNaturalSize] = useState<{
+    w: number;
+    h: number;
+  } | null>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
@@ -198,7 +198,7 @@ export default function ProductDetailsClient({
 
   return (
     <main className="min-h-screen bg-[#f8f9f6] text-[#242b29]">
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+      <div className="mx-auto max-w-7xl px-4 py-6 lg:py-10 sm:px-6">
         {/* Breadcrumb */}
         <nav
           aria-label="Breadcrumb"
@@ -239,7 +239,7 @@ export default function ProductDetailsClient({
             {/* Main image */}
             <div
               ref={imageRef}
-              className="relative h-65 w-full max-w-[90%] mx-auto sm:h-85 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm cursor-crosshair"
+              className="relative h-79 w-full mx-auto sm:h-99 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm cursor-crosshair"
               onMouseMove={handleMouseMove}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={() => setIsLensVisible(false)}
@@ -258,7 +258,10 @@ export default function ProductDetailsClient({
                 onLoad={(e) => {
                   const img = e.currentTarget as HTMLImageElement;
                   if (img.naturalWidth && img.naturalHeight) {
-                    setImgNaturalSize({ w: img.naturalWidth, h: img.naturalHeight });
+                    setImgNaturalSize({
+                      w: img.naturalWidth,
+                      h: img.naturalHeight,
+                    });
                   }
                 }}
               />
