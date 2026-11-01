@@ -13,10 +13,10 @@ export default async function ProductPage({
   const category = params.category;
   const sort = params.sort;
 
-  const categoryItem = categories.find(
-    (c) => c.name.toLowerCase() === category.toLowerCase()
-  );
-  const categoryId = categoryItem?.id;
+  const categoryItem =
+    category &&
+    categories.find((c) => c.name.toLowerCase() === category.toLowerCase());
+  const categoryId = typeof categoryItem === "object" ? categoryItem?.id : undefined;
 
   const categoryProducts = categoryId
     ? products.filter((product) => product.categoryId === categoryId)
