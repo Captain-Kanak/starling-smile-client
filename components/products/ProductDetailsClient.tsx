@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,6 +9,9 @@ import {
   Plus,
   ChevronRight,
   ChevronLeft,
+  Truck,
+  ShieldCheck,
+  RotateCcw,
 } from "lucide-react";
 
 import type { Product } from "@/data/products";
@@ -24,6 +27,18 @@ export default function ProductDetailsClient({
   const [selectedVariant, setSelectedVariant] = useState<
     Product["variants"][number] | null
   >(null);
+  const [lensPos, setLensPos] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const [isLensVisible, setIsLensVisible] = useState(false);
+  const [containerSize, setContainerSize] = useState<{ w: number; h: number } | null>(
+    null,
+  );
+  const [imgNaturalSize, setImgNaturalSize] = useState<{ w: number; h: number } | null>(
+    null,
+  );
+  const imageRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   const images =
     product.images?.filter(
@@ -132,6 +147,55 @@ export default function ProductDetailsClient({
     });
   };
 
+  const getZoomStyles = () => {
+    if (!lensPos || !containerSize || !imgNaturalSize) return {};
+
+    const containerAspect = containerSize.w / containerSize.h;
+    const imageAspect = imgNaturalSize.w / imgNaturalSize.h;
+
+    let renderW: number;
+    let renderH: number;
+
+    if (containerAspect > imageAspect) {
+      renderH = containerSize.h;
+      renderW = containerSize.h * imageAspect;
+    } else {
+      renderW = containerSize.w;
+      renderH = containerSize.w / imageAspect;
+    }
+
+    const offsetX = (containerSize.w - renderW) / 2;
+    const offsetY = (containerSize.h - renderH) / 2;
+
+    const imgX = (lensPos.x - offsetX) / renderW;
+    const imgY = (lensPos.y - offsetY) / renderH;
+
+    return {
+      backgroundImage: `url(${image})`,
+      backgroundSize: `${renderW * 2}px ${renderH * 2}px`,
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: `${Math.max(0, Math.min(100, imgX * 100))}% ${Math.max(0, Math.min(100, imgY * 100))}%`,
+      opacity: 0.85,
+    };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setLensPos({ x, y });
+    if (!containerSize) {
+      setContainerSize({ w: rect.width, h: rect.height });
+    }
+  };
+
+  const handleMouseEnter = () => {
+    setIsLensVisible(true);
+    if (containerSize) {
+      setLensPos({ x: containerSize.w / 2, y: containerSize.h / 2 });
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#f8f9f6] text-[#242b29]">
       <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
@@ -173,16 +237,37 @@ export default function ProductDetailsClient({
           {/* LEFT: PRODUCT GALLERY */}
           <section className="min-w-0 flex flex-col gap-4">
             {/* Main image */}
-            <div className="relative h-65 w-full sm:h-85 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div
+              ref={imageRef}
+              className="relative h-65 w-full max-w-[90%] mx-auto sm:h-85 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm cursor-crosshair"
+              onMouseMove={handleMouseMove}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={() => setIsLensVisible(false)}
+            >
               <Image
+                ref={imgRef}
                 key={image}
                 src={image}
                 alt={product.name}
                 fill
                 priority
                 sizes="(max-width: 1023px) 100vw, 480px"
-                className="object-contain w-full h-full"
+                className={`object-cover w-full h-full ${
+                  isLensVisible ? "opacity-0" : ""
+                }`}
+                onLoad={(e) => {
+                  const img = e.currentTarget as HTMLImageElement;
+                  if (img.naturalWidth && img.naturalHeight) {
+                    setImgNaturalSize({ w: img.naturalWidth, h: img.naturalHeight });
+                  }
+                }}
               />
+              {isLensVisible && lensPos && containerSize && imgNaturalSize && (
+                <div
+                  className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none"
+                  style={getZoomStyles()}
+                />
+              )}
               {galleryImages.length > 1 && (
                 <>
                   <button
@@ -213,7 +298,7 @@ export default function ProductDetailsClient({
                     <ChevronRight size={16} />
                   </button>
 
-                  <span className="absolute bottom-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/70 bg-white/80 backdrop-blur px-2.5 py-1 text-[10px] font-medium text-gray-600 shadow-sm sm:px-3 sm:py-1.5 sm:text-xs">
+                  <span className="absolute bottom-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/70 bg-white/85 backdrop-blur px-2.5 py-1 text-[10px] font-medium text-gray-600 shadow-sm sm:px-3 sm:py-1.5 sm:text-xs">
                     {selectedImage + 1} / {galleryImages.length}
                   </span>
                 </>
@@ -222,7 +307,7 @@ export default function ProductDetailsClient({
 
             {/* Thumbnails */}
             {galleryImages.length > 1 && (
-              <div className="flex items-center gap-2 mt-4">
+              <div className="flex items-center gap-2 mt-2">
                 <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-2 scrollbar-none">
                   {galleryImages.map((thumbnail, index) => (
                     <button
@@ -252,7 +337,7 @@ export default function ProductDetailsClient({
           </section>
 
           {/* RIGHT: PRODUCT INFORMATION */}
-          <section className="min-w-0 flex h-65 sm:h-85 flex-col justify-between">
+          <section className="min-w-0 flex flex-col justify-between">
             {/* Essential product info */}
             <div className="flex-1 space-y-3">
               {/* Product title */}
@@ -262,7 +347,7 @@ export default function ProductDetailsClient({
 
               {/* Product code */}
               <p className="mt-1 text-[10px] text-gray-400">
-                Product code:{""}
+                Product code:{" "}
                 <span className="font-medium text-gray-600">
                   {variant?.sku || "N/A"}
                 </span>
@@ -413,11 +498,11 @@ export default function ProductDetailsClient({
                 </div>
               )}
 
-              {/* ADD TO CART */}
-              <div className="mt-5">
-                <div className="flex items-center gap-2">
-                  {/* Quantity */}
-                  <div className="flex h-8 shrink-0 items-center rounded-md border border-gray-200">
+              {/* PURCHASING CONTROLS: Quantity Selector & Horizontal Action Buttons */}
+              <div className="mt-5 space-y-3">
+                {/* Quantity selector row */}
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-36 items-center justify-between rounded-lg border border-gray-200 bg-white px-2 shadow-sm">
                     <button
                       type="button"
                       onClick={() =>
@@ -425,12 +510,12 @@ export default function ProductDetailsClient({
                       }
                       disabled={!isInStock || quantity <= 1}
                       aria-label="Decrease quantity"
-                      className="cursor-pointer flex size-6 items-center justify-center text-gray-500 hover:text-[#087f8c] disabled:opacity-30"
+                      className="cursor-pointer flex size-7 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-[#087f8c] disabled:opacity-30 transition"
                     >
-                      <Minus size={10} />
+                      <Minus size={12} />
                     </button>
 
-                    <span className="w-5 text-center text-[10px] font-semibold">
+                    <span className="text-xs font-semibold text-gray-700">
                       {quantity}
                     </span>
 
@@ -443,33 +528,64 @@ export default function ProductDetailsClient({
                       }
                       disabled={!isInStock || quantity >= availableStock}
                       aria-label="Increase quantity"
-                      className="cursor-pointer flex size-6 items-center justify-center text-gray-500 hover:text-[#087f8c] disabled:opacity-30"
+                      className="cursor-pointer flex size-7 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-[#087f8c] disabled:opacity-30 transition"
                     >
-                      <Plus size={10} />
+                      <Plus size={12} />
                     </button>
                   </div>
 
-                  {/* Cart button */}
+                  {isInStock && availableStock > 0 && (
+                    <span className="text-xs font-medium text-gray-500">
+                      {availableStock} items available
+                    </span>
+                  )}
+                </div>
+
+                {/* Buy Now & Add to Cart flex row */}
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleBuyNow}
+                    disabled={!isInStock}
+                    className="cursor-pointer flex-1 flex h-10 items-center justify-center rounded-lg bg-[#087f8c] text-xs font-bold text-white shadow-sm transition hover:bg-[#066b82] disabled:cursor-not-allowed disabled:bg-gray-300"
+                  >
+                    Buy Now
+                  </button>
+
                   <button
                     type="button"
                     onClick={handleAddToCart}
                     disabled={!isInStock}
-                    className="cursor-pointer flex h-8 min-w-0 flex-1 items-center justify-center gap-2 rounded-lg bg-[#087f8c] px-3 text-[10px] font-bold text-white transition hover:bg-[#066b82] disabled:cursor-not-allowed disabled:bg-gray-300 sm:text-xs sm:px-4"
+                    className="cursor-pointer flex-1 flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white text-xs font-bold text-[#242b29] shadow-sm transition hover:bg-gray-50 hover:border-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <ShoppingCart size={13} />
+                    <ShoppingCart size={14} />
                     {isInStock ? "Add to Cart" : "Out of Stock"}
                   </button>
                 </div>
 
-                {/* Buy now */}
-                <button
-                  type="button"
-                  onClick={handleBuyNow}
-                  disabled={!isInStock}
-                  className="cursor-pointer mt-2 h-7 w-full rounded-lg bg-[#eef3ec] text-[10px] font-bold text-[#087f8c] uppercase tracking-wider transition hover:bg-[#e2eadf] disabled:cursor-not-allowed disabled:opacity-50 sm:text-xs sm:h-8"
-                >
-                  Buy Now
-                </button>
+                {/* Benefits stats */}
+                <div className="grid grid-cols-3 gap-2 rounded-lg bg-[#f7f8f6] p-3 border border-gray-100">
+                  <div className="flex flex-col items-center justify-center gap-1 text-center">
+                    <Truck size={16} className="text-[#087f8c]" />
+                    <span className="text-[10px] font-medium text-gray-600 sm:text-[11px]">
+                      Fast Delivery
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col items-center justify-center gap-1 text-center border-x border-gray-200">
+                    <ShieldCheck size={16} className="text-[#087f8c]" />
+                    <span className="text-[10px] font-medium text-gray-600 sm:text-[11px]">
+                      Quality Assured
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col items-center justify-center gap-1 text-center">
+                    <RotateCcw size={16} className="text-[#087f8c]" />
+                    <span className="text-[10px] font-medium text-gray-600 sm:text-[11px]">
+                      Easy Returns
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
