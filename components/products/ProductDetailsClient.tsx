@@ -198,7 +198,7 @@ export default function ProductDetailsClient({
 
   return (
     <main className="min-h-screen bg-[#f8f9f6] text-[#242b29]">
-      <div className="mx-auto max-w-7xl px-4 py-6 lg:py-10 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 py-6 lg:py-10 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav
           aria-label="Breadcrumb"
