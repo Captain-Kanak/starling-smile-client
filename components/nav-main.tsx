@@ -27,13 +27,13 @@ export function NavMain({
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           {items.map((item) => {
-            const isActive = pathname === item.url || pathname.startsWith(item.url + "/")
+            const isActive = pathname === item.url
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
                   tooltip={item.title}
                   render={<a href={item.url} />}
-                  className={isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : undefined}
+                  className={isActive ? "bg-[#f3f4f6] border border-[#e5e5e5] rounded-lg text-primary" : undefined}
                 >
                   {item.icon}
                   <span>{item.title}</span>

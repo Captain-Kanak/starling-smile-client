@@ -154,7 +154,7 @@ export default function AddProductPage() {
         <SiteHeader page="Add Product" />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-8 md:py-8">
+            <div className="flex flex-col gap-4 px-4 lg:px-6 py-4 md:gap-8 md:py-8">
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">
