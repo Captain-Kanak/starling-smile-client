@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 
+import { products } from "@/data/products";
 import type { Product } from "@/data/products";
 import { categories } from "@/data/categories";
 
@@ -57,6 +58,29 @@ export default function ProductDetailsClient({
   const variant = selectedVariant ?? product.variants[0] ?? null;
 
   const category = categories.find((c) => c.id === product.categoryId);
+
+  // Real production screenshots used for the customer review section,
+  // one representative screenshot per review category.
+  const productImageByCategory: Record<string, string> = {};
+  for (const p of products) {
+    if (!productImageByCategory[p.categoryId] && p.images?.[0]) {
+      productImageByCategory[p.categoryId] = p.images[0];
+    }
+  }
+
+  const reviewCatToCategoryId: Record<string, string> = {
+    care: "cat-baby-care",
+    cleaning: "cat-cleaning",
+    clothing: "cat-clothing",
+    diapering: "cat-diapering",
+    feeding: "cat-feeding",
+    foods: "cat-baby-foods",
+    nursery: "cat-nursery",
+    toys: "cat-toys",
+  };
+
+  const reviewImageFor = (cat: string) =>
+    productImageByCategory[reviewCatToCategoryId[cat]] ?? "/images/pro-placeholder.png";
 
   const price = Number(variant?.price) || 0;
   const compareAtPrice = variant?.compareAtPrice;
@@ -626,21 +650,23 @@ export default function ProductDetailsClient({
           </div>
 
           <div className="px-6 sm:px-8 py-6 sm:py-7">
-            <div className="flex flex-wrap gap-4 sm:gap-6">
-              {["care", "cleaning", "clothing", "diapering", "feeding", "foods", "nursery", "toys"]
-                .slice(0, reviewImagesVisible)
-                .map((cat, index) => (
+          <div className="flex flex-wrap gap-4 sm:gap-6">
+            {["care", "cleaning", "clothing", "diapering", "feeding", "foods", "nursery", "toys"]
+              .slice(0, reviewImagesVisible)
+              .map((cat) => {
+                const image = reviewImageFor(cat);
+                return (
                   <div key={cat} className="relative group">
                     <button
                       type="button"
-                      onClick={() => setPreviewImage(`/images/categories/${cat}.webp`)}
-                      className="block overflow-hidden rounded-xl border border-gray-200 bg-white aspect-square w-20 sm:w-24 sm:h-24 flex items-center justify-center cursor-pointer transition hover:border-[#087f8c]"
+                      onClick={() => setPreviewImage(image)}
+                      className="block overflow-hidden rounded-xl border border-gray-200 bg-white w-24 h-30 sm:w-32 sm:h-40 flex items-center justify-center cursor-pointer transition hover:border-[#087f8c]"
                     >
                       <Image
-                        src={`/images/categories/${cat}.webp`}
+                        src={image}
                         alt={`Customer review ${cat}`}
                         fill
-                        sizes="(max-width: 1023px) 100vw, 96px"
+                        sizes="(max-width: 1023px) 100vw, 120px"
                         className="object-cover w-full h-full"
                       />
                     </button>
@@ -648,8 +674,9 @@ export default function ProductDetailsClient({
                       {cat}
                     </span>
                   </div>
-                ))}
-            </div>
+                );
+              })}
+          </div>
 
             {reviewImagesVisible < 8 && (
               <button
