@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { ImageUpload } from "@/components/products/ImageUpload"
+import { ModalSection } from "@/components/products/ModalSection"
 
 import type { Product } from "@/data/products"
 import { categories } from "@/data/categories"
@@ -168,21 +169,12 @@ export default function AddProductPage() {
               </Link>
             </div>
 
-              <form id="add-product-form" onSubmit={handleSubmit} className="space-y-8">
-                {/* Section 1: Product Information */}
-                <section className="space-y-4 border rounded-xl bg-card p-6 shadow-sm border-border">
-                  <div className="flex items-center gap-2 px-2">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/60 text-accent-foreground font-medium text-xs shadow-sm border border-accent/30">
-                      1
-                    </span>
-                    <Label className="text-sm font-semibold text-foreground leading-none">
-                      Product Information
-                    </Label>
-                    <p className="text-xs text-muted-foreground mt-0.5 leading-none">
-                      Enter the basic details about this product.
-                    </p>
-                  </div>
-
+              <form id="add-product-form" onSubmit={handleSubmit} className="space-y-6">
+                <ModalSection
+                  step={1}
+                  title="Product Information"
+                  description="Enter the basic details about this product."
+                >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="product-name">Product Name</Label>
@@ -268,21 +260,13 @@ export default function AddProductPage() {
                       />
                     </div>
                   </div>
-                </section>
+                </ModalSection>
 
-                {/* Section 2: Product Variants */}
-                <section className="space-y-4 border rounded-xl bg-card p-6 shadow-sm border-border">
-                  <div className="flex items-center gap-2 px-2">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/60 text-accent-foreground font-medium text-xs shadow-sm border border-accent/30">
-                      2
-                    </span>
-                    <Label className="text-sm font-semibold text-foreground leading-none">
-                      Product Variants
-                    </Label>
-                    <p className="text-xs text-muted-foreground mt-0.5 leading-none">
-                      Define size, color, SKU, price & stock per variant.
-                    </p>
-                  </div>
+                <ModalSection
+                  step={2}
+                  title="Product Variants"
+                  description="Define size, color, SKU, price & stock per variant."
+                >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                       Manage variant options
@@ -413,7 +397,7 @@ export default function AddProductPage() {
                       </div>
                     ))}
                   </div>
-                </section>
+                </ModalSection>
 
                 <div className="flex items-center justify-end gap-3 pt-4">
                   <Button
