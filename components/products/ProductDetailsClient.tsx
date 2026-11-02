@@ -40,7 +40,7 @@ export default function ProductDetailsClient({
     h: number;
   } | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [reviewImagesVisible, setReviewImagesVisible] = useState(4);
+  const [reviewImagesVisible, setReviewImagesVisible] = useState(6);
   const imageRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
@@ -80,7 +80,33 @@ export default function ProductDetailsClient({
   };
 
   const reviewImageFor = (cat: string) =>
-    productImageByCategory[reviewCatToCategoryId[cat]] ?? "/images/pro-placeholder.png";
+    productImageByCategory[reviewCatToCategoryId[cat]] ??
+    "/images/pro-placeholder.png";
+
+  const baseReviewCats = [
+    "care",
+    "cleaning",
+    "clothing",
+    "diapering",
+    "feeding",
+    "foods",
+    "nursery",
+    "toys",
+  ];
+
+  const reviewImageEntries = (() => {
+    const repeats = Math.ceil(
+      Math.max(reviewImagesVisible, baseReviewCats.length) /
+        baseReviewCats.length,
+    );
+    const entries: { cat: string; image: string }[] = [];
+    for (let r = 0; r < repeats; r++) {
+      for (const cat of baseReviewCats) {
+        entries.push({ cat, image: reviewImageFor(cat) });
+      }
+    }
+    return entries;
+  })();
 
   const price = Number(variant?.price) || 0;
   const compareAtPrice = variant?.compareAtPrice;
@@ -630,7 +656,7 @@ export default function ProductDetailsClient({
             </div>
           </div>
 
-          <div className="px-6 sm:px-8 py-6 sm:py-7">
+          <div className="px-6 py-6 sm:py-7">
             <h2 className="text-sm font-bold text-gray-800 mb-3">
               Description
             </h2>
@@ -649,18 +675,16 @@ export default function ProductDetailsClient({
             </div>
           </div>
 
-          <div className="px-6 sm:px-8 py-6 sm:py-7">
-          <div className="flex flex-wrap gap-4 sm:gap-6">
-            {["care", "cleaning", "clothing", "diapering", "feeding", "foods", "nursery", "toys"]
-              .slice(0, reviewImagesVisible)
-              .map((cat) => {
-                const image = reviewImageFor(cat);
-                return (
-                  <div key={cat} className="relative group">
+          <div className="px-6 py-6 sm:py-7">
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {reviewImageEntries
+                .slice(0, reviewImagesVisible)
+                .map(({ cat, image }, i) => (
+                  <div key={`${cat}-${i}`} className="relative group">
                     <button
                       type="button"
                       onClick={() => setPreviewImage(image)}
-                      className="block overflow-hidden rounded-xl border border-gray-200 bg-white w-24 h-30 sm:w-32 sm:h-40 flex items-center justify-center cursor-pointer transition hover:border-[#087f8c]"
+                      className="block overflow-hidden rounded-xl border border-gray-200 bg-white w-full h-52 sm:h-70 items-center justify-center cursor-pointer transition hover:border-[#087f8c]"
                     >
                       <Image
                         src={image}
@@ -674,24 +698,21 @@ export default function ProductDetailsClient({
                       {cat}
                     </span>
                   </div>
-                );
-              })}
-          </div>
+                ))}
+            </div>
 
-            {reviewImagesVisible < 8 && (
-              <button
-                type="button"
-                onClick={() => setReviewImagesVisible((current) => Math.min(current + 4, 8))}
-                className="mt-6 inline-flex items-center gap-1.5 cursor-pointer text-[11px] font-semibold text-[#087f8c] hover:text-[#066b8c] transition"
-              >
-                Load More <span className="text-xs">+</span>
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => setReviewImagesVisible((current) => current + 5)}
+              className="mt-6 inline-flex items-center gap-1.5 cursor-pointer text-[11px] font-semibold text-[#087f8c] hover:text-[#066b8c] transition"
+            >
+              Load More <span className="text-xs">+</span>
+            </button>
 
             {/* Preview Modal */}
             {previewImage && (
               <div
-                className="fixed inset-0 z-[60] flex items-center justify-center"
+                className="fixed inset-0 z-60 flex items-center justify-center"
                 role="dialog"
                 aria-modal="true"
                 onClick={() => setPreviewImage(null)}
@@ -701,7 +722,7 @@ export default function ProductDetailsClient({
                   onClick={() => setPreviewImage(null)}
                 />
                 <div
-                  className="relative bg-white rounded-3xl shadow-2xl max-w-[720px] max-h-[82vh] flex flex-col items-center justify-center p-2 overflow-hidden"
+                  className="relative bg-white rounded-3xl shadow-2xl max-w-180 max-h-[82vh] flex flex-col items-center justify-center p-2 overflow-hidden"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
@@ -713,7 +734,7 @@ export default function ProductDetailsClient({
                     <X size={22} strokeWidth={2.5} className="text-black" />
                   </button>
 
-                  <div className="relative w-full max-w-[640px] max-h-[70vh] flex items-center justify-center overflow-hidden bg-transparent p-0">
+                  <div className="relative w-full max-w-160 max-h-[70vh] flex items-center justify-center overflow-hidden bg-transparent p-0">
                     <img
                       src={previewImage}
                       alt="Preview"
