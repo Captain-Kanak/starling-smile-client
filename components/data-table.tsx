@@ -363,7 +363,7 @@ export function DataTable({
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 15,
   })
   const sortableId = React.useId()
   const sensors = useSensors(
@@ -555,7 +555,7 @@ export function DataTable({
                 onValueChange={(value) => {
                   table.setPageSize(Number(value))
                 }}
-                items={[10, 20, 30, 40, 50].map((pageSize) => ({
+                items={[15, 30, 45, 60].map((pageSize) => ({
                   label: `${pageSize}`,
                   value: `${pageSize}`,
                 }))}
@@ -565,11 +565,11 @@ export function DataTable({
                 </SelectTrigger>
                 <SelectContent side="top">
                   <SelectGroup>
-                    {[10, 20, 30, 40, 50].map((pageSize) => (
-                      <SelectItem key={pageSize} value={`${pageSize}`}>
-                        {pageSize}
-                      </SelectItem>
-                    ))}
+                  {[15, 30, 45, 60].map((pageSize) => (
+                    <SelectItem key={pageSize} value={`${pageSize}`}>
+                      {pageSize}
+                    </SelectItem>
+                  ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>

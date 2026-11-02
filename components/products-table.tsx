@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Toaster } from "@/components/ui/sonner"
+import Pagination from "@/components/ui/pagination"
 import {
   PlusIcon,
   SearchIcon,
@@ -38,6 +39,8 @@ const statusConfig: Record<
 
 export function ProductsTable() {
   const [search, setSearch] = useState("")
+  const [page, setPage] = useState(0)
+  const [pageSize, setPageSize] = useState(15)
   const [addProductOpen, setAddProductOpen] = useState(false)
   const [editProductOpen, setEditProductOpen] = useState(false)
   const [deleteProductOpen, setDeleteProductOpen] = useState(false)
@@ -51,6 +54,11 @@ export function ProductsTable() {
       product.variants.some((v) =>
         v.sku.toLowerCase().includes(search.toLowerCase())
       )
+  )
+
+  const paginatedProducts = filteredProducts.slice(
+    page * pageSize,
+    (page + 1) * pageSize
   )
 
   const handleAddProduct = (product: Omit<Product, "id">) => {
@@ -80,7 +88,10 @@ export function ProductsTable() {
               placeholder="Search products..."
               className="pl-10"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value)
+                setPage(0)
+              }}
             />
           </div>
           <div className="flex items-center gap-3">
@@ -136,7 +147,7 @@ export function ProductsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredProducts.map((product) => {
+            {paginatedProducts.map((product) => {
               const firstVariant = product.variants[0]
               const prices = product.variants.map((v) => v.price)
               const totalStock = product.variants.reduce(
@@ -205,6 +216,13 @@ export function ProductsTable() {
           </TableBody>
         </Table>
       </div>
+      <Pagination
+        totalItems={filteredProducts.length}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+      />
     </div>
   );
 }

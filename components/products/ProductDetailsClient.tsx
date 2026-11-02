@@ -735,11 +735,13 @@ export default function ProductDetailsClient({
                   </button>
 
                   <div className="relative w-full max-w-160 max-h-[70vh] flex items-center justify-center overflow-hidden bg-transparent p-0">
-                    <img
-                      src={previewImage}
-                      alt="Preview"
-                      className="object-contain w-auto h-auto max-w-full max-h-[64vh] rounded-xl"
-                    />
+                  <Image
+                    src={previewImage}
+                    alt="Preview"
+                    className="object-contain w-auto h-auto max-w-full max-h-[64vh] rounded-xl"
+                    fill
+                    sizes="(max-width: 160px) 160px, 160px"
+                  />
                   </div>
                 </div>
               </div>

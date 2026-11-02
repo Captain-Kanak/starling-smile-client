@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Toaster } from "@/components/ui/sonner"
+import Pagination from "@/components/ui/pagination"
 import {
   PlusIcon,
   SearchIcon,
@@ -38,12 +39,19 @@ const statusConfig: Record<
 
 export function OrdersTable() {
   const [search, setSearch] = useState("")
+  const [page, setPage] = useState(0)
+  const [pageSize, setPageSize] = useState(15)
 
   const filteredOrders = orders.filter(
     (order) =>
       order.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
       order.customer.toLowerCase().includes(search.toLowerCase()) ||
       order.email.toLowerCase().includes(search.toLowerCase())
+  )
+
+  const paginatedOrders = filteredOrders.slice(
+    page * pageSize,
+    (page + 1) * pageSize
   )
 
   return (
@@ -56,7 +64,10 @@ export function OrdersTable() {
             placeholder="Search orders..."
             className="pl-10"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              setPage(0)
+            }}
           />
         </div>
         <Button variant="outline" size="sm">
@@ -80,7 +91,7 @@ export function OrdersTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredOrders.map((order) => (
+            {paginatedOrders.map((order) => (
               <TableRow key={order.id}>
                 <TableCell className="font-medium">
                   {order.orderNumber}
@@ -132,6 +143,13 @@ export function OrdersTable() {
           </TableBody>
         </Table>
       </div>
+      <Pagination
+        totalItems={filteredOrders.length}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+      />
     </div>
   );
 }

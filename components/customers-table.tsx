@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Toaster } from "@/components/ui/sonner"
+import Pagination from "@/components/ui/pagination"
 import {
   PlusIcon,
   SearchIcon,
@@ -32,12 +33,19 @@ const statusConfig: Record<
 
 export function CustomersTable() {
   const [search, setSearch] = useState("")
+  const [page, setPage] = useState(0)
+  const [pageSize, setPageSize] = useState(15)
 
   const filteredCustomers = customers.filter(
     (customer) =>
       customer.name.toLowerCase().includes(search.toLowerCase()) ||
       customer.email.toLowerCase().includes(search.toLowerCase()) ||
       customer.city.toLowerCase().includes(search.toLowerCase())
+  )
+
+  const paginatedCustomers = filteredCustomers.slice(
+    page * pageSize,
+    (page + 1) * pageSize
   )
 
   return (
@@ -50,7 +58,10 @@ export function CustomersTable() {
             placeholder="Search customers..."
             className="pl-10"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              setPage(0)
+            }}
           />
         </div>
         <Button variant="outline" size="sm">
@@ -75,7 +86,7 @@ export function CustomersTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredCustomers.map((customer) => (
+            {paginatedCustomers.map((customer) => (
               <TableRow key={customer.id}>
                 <TableCell className="w-20">
                   <div className="flex items-center">
@@ -115,6 +126,13 @@ export function CustomersTable() {
           </TableBody>
         </Table>
       </div>
+      <Pagination
+        totalItems={filteredCustomers.length}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+      />
     </div>
   );
 }
